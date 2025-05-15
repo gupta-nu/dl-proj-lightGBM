@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from src.preprocessing import load_and_preprocess
 from src.model import train_lgb
 import joblib
+import lightgbm as lgb
 
 def train_and_evaluate():
     # Load and preprocess the dataset
@@ -60,18 +61,24 @@ def train_and_evaluate():
     save_dir = "outputs/visualizations"
     os.makedirs(save_dir, exist_ok=True)
 
-    # Save confusion matrices figure
-    plt.savefig(os.path.join(save_dir, "confusion_matrices.png"))
+    lgb.plot_importance(breed_model, max_num_features=10)
+    plt.title("Feature Importance - Breed Category Model")
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, "feature_importance_breed.png"))
+    print("[INFO] Saved feature importance plot: feature_importance_breed.png")
+    plt.close()
+
+    lgb.plot_importance(pet_model, max_num_features=10)
+    plt.title("Feature Importance - Pet Category Model")
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, "feature_importance_pet.png"))
+    print("[INFO] Saved feature importance plot: feature_importance_pet.png")
     plt.close()
 
     # Save trained models
     os.makedirs("outputs", exist_ok=True)
     joblib.dump(breed_model, "outputs/breed_model.pkl")
     joblib.dump(pet_model, "outputs/pet_model.pkl")
-
-    print(f"[INFO] Models and confusion matrices saved in 'outputs/' directory.")
-
-    return breed_model, pet_model
 
 if __name__ == "__main__":
     train_and_evaluate()
